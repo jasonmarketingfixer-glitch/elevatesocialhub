@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>⚡ Elevate Social Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --indigo: #1B0A6E;
+    --blue: #00B4D8;
+    --grey: #63666A;
+    --bg: #F0F7FA;
+    --dark: #1A1A2E;
+    --white: #ffffff;
+    --border: #E5E7EB;
+    --green: #059669;
+    --amber: #D97706;
+    --red: #EF4444;
+  }
+  html, body { height: 100%; font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg); color: var(--dark); }
+  button { font-family: inherit; cursor: pointer; }
+  textarea, select, input { font-family: inherit; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ── LAYOUT ── */
+  #app { max-width: 430px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; position: relative; }
+
+  /* ── HEADER ── */
+  #header {
+    background: linear-gradient(135deg, #1B0A6E 0%, #0D3B6E 55%, #007DA8 100%);
+    padding: 16px 18px 14px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  #header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  #header-title { color: white; font-weight: 800; font-size: 16px; letter-spacing: -0.3px; }
+  #header-sub { color: rgba(255,255,255,0.55); font-size: 11px; font-weight: 500; margin-top: 2px; }
+  #role-select {
+    background: rgba(255,255,255,0.14); color: white;
+    border: 1px solid rgba(255,255,255,0.28); border-radius: 8px;
+    padding: 5px 8px; font-size: 11px; font-weight: 600; outline: none;
+  }
+  #role-select option { color: #000; background: #fff; }
+  #header-bottom { display: flex; align-items: center; justify-content: space-between; }
+  #sync-info { font-size: 10px; color: rgba(255,255,255,0.45); }
+  #sync-btn {
+    background: rgba(255,255,255,0.18); color: white;
+    border: 1px solid rgba(255,255,255,0.28); border-radius: 8px;
+    padding: 4px 10px; font-size: 11px; font-weight: 600;
+    display: flex; align-items: center; gap: 5px;
+  }
+  #sync-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* ── TAB BAR ── */
+  #tabs {
+    display: flex; background: white;
+    border-bottom: 2px solid var(--border);
+    position: sticky; top: 76px; z-index: 99;
+  }
+  .tab-btn {
+    flex: 1; padding: 12px 8px; border: none; background: none;
+    font-size: 13px; font-weight: 600; color: #9CA3AF;
+    border-bottom: 2px solid transparent; margin-bottom: -2px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .tab-btn.active { color: var(--indigo); font-weight: 800; border-bottom-color: var(--indigo); }
+
+  /* ── CONTENT ── */
+  #content { padding: 16px 14px 80px; flex: 1; animation: fadeUp 0.3s ease; }
+
+  /* ── FOOTER ── */
+  #footer {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 430px;
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border);
+    padding: 8px 18px;
+    display: flex; justify-content: space-between; align-items: center;
+    z-index: 98;
+  }
+  #footer-left { font-size: 10px; color: #9CA3AF; }
+  #footer-right { font-size: 10px; font-weight: 700; color: var(--indigo); }
+
+  /* ── PROGRESS CARD ── */
+  .progress-card {
+    background: white; border-radius: 12px; padding: 14px 16px;
+    margin-bottom: 14px; border: 1.5px solid var(--border);
+  }
+  .progress-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .progress-label { font-size: 11px; font-weight: 700; color: #9CA3AF; letter-spacing: 0.06em; }
+  .progress-count { font-size: 12px; font-weight: 800; color: var(--green); }
+  .progress-bar-bg { height: 7px; background: #F3F4F6; border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
+  .progress-bar-fill {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, var(--indigo), var(--blue));
+    transition: width 0.5s ease;
+  }
+  .progress-dots { display: flex; gap: 10px; flex-wrap: wrap; }
+  .progress-dot { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #6B7280; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── FILTER CHIPS ── */
+  .filter-row { display: flex; gap: 6px; margin-bottom: 8px; overflow-x: auto; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0; padding: 5px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; border: 1.5px solid var(--border);
+    background: white; color: #6B7280; transition: all 0.12s;
+  }
+  .chip.active-platform { background: var(--indigo); color: white; border-color: var(--indigo); }
+  .chip.active-status { background: var(--blue); color: white; border-color: var(--blue); }
+
+  /* ── POST CARD ── */
+  .post-card {
+    background: white; border-radius: 12px; border: 1.5px solid var(--border);
+    overflow: hidden; margin-bottom: 8px;
+    transition: box-shadow 0.2s;
+  }
+  .post-card.expanded { box-shadow: 0 6px 20px rgba(27,10,110,0.1); }
+  .post-card-top {
+    padding: 12px 14px; cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .post-meta { flex: 1; min-width: 0; }
+  .post-badges { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; flex-wrap: wrap; }
+  .post-title {
+    font-size: 13px; font-weight: 600; color: var(--dark);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    line-height: 1.35;
+  }
+  .post-title.wrap { white-space: normal; }
+  .post-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .chevron { color: #D1D5DB; font-size: 11px; transition: transform 0.2s; display: inline-block; }
+  .chevron.up { transform: rotate(180deg); }
+
+  .post-body { border-top: 1px solid #F3F4F6; padding: 12px 14px; background: #FAFAFA; }
+  .body-label { font-size: 10px; font-weight: 700; color: #9CA3AF; margin-bottom: 5px; letter-spacing: 0.06em; }
+  .caption-preview {
+    font-size: 12px; color: #374151; white-space: pre-line; line-height: 1.6;
+    background: white; border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; max-height: 120px; overflow-y: auto; margin-bottom: 10px;
+    font-family: 'DM Mono', monospace;
+  }
+  .notes-text { font-size: 12px; color: #6B7280; line-height: 1.5; margin-bottom: 10px; }
+  .cta-pill { font-size: 12px; color: var(--indigo); font-weight: 600; background: #F0F7FA; border-radius: 8px; padding: 6px 10px; margin-bottom: 10px; }
+  .write-btn {
+    width: 100%; border: none; border-radius: 10px; padding: 11px;
+    font-weight: 700; font-size: 13px; transition: opacity 0.15s;
+  }
+  .write-btn.has-caption { background: #F0F7FA; color: var(--indigo); border: 1.5px solid rgba(0,180,216,0.27); }
+  .write-btn.no-caption { background: linear-gradient(135deg, var(--indigo), var(--blue)); color: white; }
+
+  /* ── PLATFORM BADGES ── */
+  .platform-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 9px; border-radius: 20px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap;
+  }
+  .platform-badge.Instagram { background: #fdf0f5; color: #E1306C; border: 1px solid rgba(225,48,108,0.15); }
+  .platform-badge.Instagram-Story { background: #f5f0fd; color: #833AB4; border: 1px solid rgba(131,58,180,0.15); }
+  .platform-badge.Instagram-Reel { background: #fff3f0; color: #F56040; border: 1px solid rgba(245,96,64,0.15); }
+  .platform-badge.Facebook { background: #f0f5ff; color: #1877F2; border: 1px solid rgba(24,119,242,0.15); }
+  .platform-badge.TikTok { background: #f5f5f5; color: #111; border: 1px solid rgba(0,0,0,0.1); }
+
+  /* ── STATUS BADGES ── */
+  .status-badge {
+    padding: 3px 9px; border-radius: 20px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap;
+    border: 1px solid; cursor: pointer; transition: opacity 0.1s;
+  }
+  .status-badge.not-started { background: #F3F4F6; color: #6B7280; border-color: rgba(107,114,128,0.27); }
+  .status-badge.in-progress { background: #EFF6FF; color: #2563EB; border-color: rgba(37,99,235,0.27); }
+  .status-badge.submitted { background: #FFFBEB; color: #D97706; border-color: rgba(217,119,6,0.27); }
+  .status-badge.done { background: #ECFDF5; color: #059669; border-color: rgba(5,150,105,0.27); }
+  .status-badge.no-click { cursor: default; }
+
+  /* ── TYPE BADGE ── */
+  .type-badge { font-size: 10px; color: #9CA3AF; font-weight: 600; }
+
+  /* ── WEEK PLAN ── */
+  .week-tabs { display: flex; gap: 8px; margin-bottom: 18px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+  .week-tabs::-webkit-scrollbar { display: none; }
+  .week-tab {
+    flex-shrink: 0; padding: 7px 14px; border-radius: 20px;
+    font-size: 12px; font-weight: 700; border: 1.5px solid var(--border);
+    background: white; color: #6B7280; transition: all 0.15s;
+  }
+  .week-tab.active { background: linear-gradient(135deg, var(--indigo), var(--blue)); color: white; border-color: transparent; }
+  .week-hero {
+    background: linear-gradient(135deg, #1B0A6E 0%, #0D4B8E 60%, #00B4D8 100%);
+    border-radius: 14px; padding: 18px; margin-bottom: 18px; color: white;
+  }
+  .week-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; opacity: 0.6; margin-bottom: 4px; }
+  .week-theme { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+  .week-desc { font-size: 12px; opacity: 0.8; margin-bottom: 6px; line-height: 1.4; }
+  .week-goal { font-size: 11px; opacity: 0.65; line-height: 1.4; }
+
+  .platform-section { margin-bottom: 18px; }
+  .platform-section-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+  .platform-section-name { font-size: 12px; font-weight: 800; }
+  .platform-count { border-radius: 20px; padding: 1px 7px; font-size: 10px; font-weight: 700; }
+
+  .plan-post-card { background: white; border-radius: 10px; padding: 10px 12px; margin-bottom: 7px; border: 1.5px solid; }
+  .plan-post-inner { display: flex; gap: 8px; align-items: flex-start; }
+  .plan-type-badge { border-radius: 6px; padding: 2px 6px; font-size: 9px; font-weight: 800; flex-shrink: 0; margin-top: 1px; }
+  .plan-post-title { font-size: 12px; font-weight: 600; color: var(--dark); line-height: 1.4; }
+  .plan-post-cta { font-size: 11px; font-weight: 500; margin-top: 3px; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10,5,40,0.75); backdrop-filter: blur(6px);
+    display: flex; align-items: flex-end; justify-content: center;
+    z-index: 1000; animation: fadeIn 0.2s ease;
+  }
+  .modal-sheet {
+    background: white; border-radius: 20px 20px 0 0;
+    width: 100%; max-width: 430px; max-height: 92vh; overflow-y: auto;
+    box-shadow: 0 -8px 40px rgba(27,10,110,0.3);
+    animation: slideUp 0.25s ease;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+  .modal-handle-row { display: flex; justify-content: center; padding: 12px 0 0; }
+  .modal-handle { width: 36px; height: 4px; background: #E5E7EB; border-radius: 2px; }
+  .modal-header {
+    padding: 12px 20px 16px; border-bottom: 1px solid #F3F4F6;
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .modal-title { font-weight: 800; font-size: 16px; color: var(--indigo); }
+  .modal-close {
+    background: #F3F4F6; border: none; color: #6B7280;
+    width: 32px; height: 32px; border-radius: 8px; font-size: 16px;
+  }
+  .modal-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+
+  .concept-pill { background: #F0F7FA; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: var(--indigo); font-weight: 600; line-height: 1.4; }
+  .field-label { font-size: 11px; font-weight: 700; color: #9CA3AF; display: block; margin-bottom: 6px; letter-spacing: 0.06em; }
+  .field-textarea {
+    width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; font-size: 13px; resize: vertical; outline: none;
+    line-height: 1.5; transition: border-color 0.15s, box-shadow 0.15s;
+    background: white;
+  }
+  .field-textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,180,216,0.12); }
+  .field-textarea.mono { font-family: 'DM Mono', monospace; font-size: 12px; line-height: 1.65; min-height: 180px; background: #FAFAFA; }
+  .field-textarea:disabled { background: #F9FAFB; }
+
+  .generate-btn {
+    width: 100%; border: none; border-radius: 12px; padding: 13px;
+    font-weight: 800; font-size: 14px; letter-spacing: -0.2px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: opacity 0.15s;
+  }
+  .generate-btn.ready { background: linear-gradient(135deg, var(--indigo), var(--blue)); color: white; }
+  .generate-btn.loading { background: #D1D5DB; color: #9CA3AF; cursor: not-allowed; }
+  .error-box { background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 8px; padding: 12px; font-size: 13px; color: var(--red); }
+  .action-row { display: flex; gap: 8px; }
+  .action-btn { flex: 1; border-radius: 12px; padding: 12px; font-weight: 700; font-size: 13px; border: 1.5px solid; }
+  .action-btn.draft { background: #F0F7FA; color: var(--indigo); border-color: rgba(0,180,216,0.27); }
+  .action-btn.submit { background: #FFFBEB; color: #D97706; border-color: #FCD34D; }
+  .action-btn.approve { width: 100%; background: #ECFDF5; color: var(--green); border-color: #6EE7B7; font-weight: 800; font-size: 14px; padding: 13px; }
+
+  .spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; animation: spin 0.7s linear infinite; }
+  .spinner-dark { width: 10px; height: 10px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; animation: spin 0.7s linear infinite; }
+
+  /* ── EMPTY ── */
+  .empty-state { text-align: center; padding: 40px; color: #9CA3AF; font-size: 13px; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="header">
+    <div id="header-top">
+      <div>
+        <div id="header-title">⚡ Elevate Social Hub</div>
+        <div id="header-sub">Week 1 · March 9–15, 2026</div>
+      </div>
+      <select id="role-select">
+        <option value="admin">⚙️ Jason (Admin)</option>
+        <option value="approver">✓ Tom (Approver)</option>
+        <option value="creator">✏️ Creator</option>
+      </select>
+    </div>
+    <div id="header-bottom">
+      <div id="sync-info">Not yet synced to Notion</div>
+      <button id="sync-btn">↑ Sync to Notion</button>
+    </div>
+  </div>
+
+  <div id="tabs">
+    <button class="tab-btn active" data-tab="calendar">📅 Calendar</button>
+    <button class="tab-btn" data-tab="plan">🗓 30-Day Plan</button>
+  </div>
+
+  <div id="content"></div>
+
+  <div id="footer">
+    <div id="footer-left">Real people. Real fitness. Real community.</div>
+    <div id="footer-right">elevatesyracuse.com</div>
+  </div>
+</div>
+
+<!-- MODAL CONTAINER -->
+<div id="modal-container"></div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────
+
+const WEEK_PLAN = [
+  {
+    week: 1, theme: "This is Elevate.",
+    desc: "Introduce who we are, what we offer, and why we're different.",
+    goal: "Establish visual identity, build initial engagement habits, and launch TikTok.",
+    posts: [
+      { platform: "Instagram", type: "Carousel", title: "5 Things You Didn't Know About Elevate", cta: "Tap link in bio to book a free tour" },
+      { platform: "Instagram", type: "Reel", title: "Cinematic walkthrough — Liverpool location", cta: "This isn't your average gym. See for yourself." },
+      { platform: "Instagram", type: "Static", title: '"More than a gym." Brand graphic', cta: "What does fitness mean to you? Tell us below." },
+      { platform: "Instagram", type: "Reel", title: "Trainer intro — '3 things about me'", cta: "Want to train with [Name]? Try a session free." },
+      { platform: "Instagram", type: "Carousel", title: "Recovery isn't optional", cta: "Explore our recovery center — link in bio." },
+      { platform: "Facebook", type: "Photo Album", title: "Welcome to Elevate — both locations", cta: "Book your free tour at elevatesyracuse.com" },
+      { platform: "Facebook", type: "Question", title: "Community engagement — what keeps you coming back?", cta: "Drop your answer below!" },
+      { platform: "Facebook", type: "Share Reel", title: "Walkthrough Reel shared natively", cta: "See what makes us different." },
+      { platform: "Facebook", type: "Story Post", title: "Local tie-in — proud to be Syracuse", cta: "" },
+      { platform: "TikTok", type: "Video", title: '"People think we\'re just a gym…" reveal', cta: "" },
+      { platform: "TikTok", type: "Video", title: '"Things my trainer says during class" — humor', cta: "" },
+      { platform: "TikTok", type: "Video", title: '"Day in the life at Elevate" — member POV', cta: "" },
+      { platform: "TikTok", type: "Video", title: "Recovery routine after leg day", cta: "" },
+      { platform: "TikTok", type: "Video", title: '"Syracuse\'s best-kept fitness secret" — hook reveal', cta: "" },
+    ]
+  },
+  {
+    week: 2, theme: "We know fitness. Let us show you.",
+    desc: "Position Elevate's trainers and programs as the authority in CNY.",
+    goal: "Drive engagement through value-first content. Build trainer personal brands.",
+    posts: [
+      { platform: "Instagram", type: "Reel", title: '"3 mistakes you\'re making on the leg press"', cta: "Save this for your next workout." },
+      { platform: "Instagram", type: "Carousel", title: '"Your first week at Elevate" — new member guide', cta: "Ready for your first week? Book a free tour." },
+      { platform: "Instagram", type: "Reel", title: "Class energy clip — spin or group fitness", cta: "Try a class on us. Tap the link." },
+      { platform: "Instagram", type: "Static", title: "Member spotlight (with permission)", cta: "Every story starts somewhere. Start yours at Elevate." },
+      { platform: "Instagram", type: "Reel", title: '"5 reasons to try recovery after your workout"', cta: "Explore recovery at elevatesyracuse.com." },
+      { platform: "Facebook", type: "Trainer Spotlight", title: "Meet [Name] — [specialty] expert", cta: "" },
+      { platform: "Facebook", type: "Educational", title: '"Why recovery is the missing piece of your fitness routine"', cta: "Learn more at elevatesyracuse.com." },
+      { platform: "Facebook", type: "Share", title: "Member spotlight from Instagram", cta: "" },
+      { platform: "Facebook", type: "Engagement", title: '"What class should we spotlight next?"', cta: "Drop your favorite below!" },
+      { platform: "TikTok", type: "Video", title: '"Things that just hit different at Elevate" — montage', cta: "" },
+      { platform: "TikTok", type: "Video", title: "Trainer myth-buster — lifting heavy won't make you bulky", cta: "" },
+      { platform: "TikTok", type: "Video", title: '"POV: You finally try the recovery center"', cta: "" },
+      { platform: "TikTok", type: "Video", title: '"What I eat in a day as a trainer at Elevate"', cta: "" },
+      { platform: "TikTok", type: "Video", title: "Stitch/duet a trending fitness creator", cta: "" },
+    ]
+  },
+  {
+    week: 3, theme: "We're your neighbors.",
+    desc: "Anchor Elevate to Syracuse identity and build emotional connection.",
+    goal: "Increase shares, tags, and local engagement. Position Elevate as a community hub.",
+    posts: [
+      { platform: "Instagram", type: "Carousel", title: '"Why Syracuse trains at Elevate" — member quotes', cta: "Tag a friend who should check us out." },
+      { platform: "Instagram", type: "Reel", title: '"What happens at Elevate after 6 PM"', cta: "Come see for yourself. Tour link in bio." },
+      { platform: "Instagram", type: "Static", title: "Partner/local business shoutout", cta: "We love our Syracuse community." },
+      { platform: "Instagram", type: "Reel", title: '"Real members, real results" — progress stories', cta: "Every journey starts with one step. Take yours at Elevate." },
+      { platform: "Instagram", type: "Carousel", title: '"Elevate vs. a regular gym" side-by-side', cta: "See what makes us different — elevatesyracuse.com." },
+      { platform: "Facebook", type: "Event", title: "Community event or local spotlight", cta: "" },
+      { platform: "Facebook", type: "Testimonial", title: '"Why I chose Elevate" — member quote + photo', cta: "Claim a free guest pass." },
+      { platform: "Facebook", type: "Photo", title: "Class group photo after workout", cta: "See you tomorrow!" },
+      { platform: "Facebook", type: "Engagement", title: '"Finish the sentence: Elevate makes me feel ___"', cta: "" },
+      { platform: "TikTok", type: "Video", title: '"Syracuse gym check" — trending format', cta: "" },
+      { platform: "TikTok", type: "Video", title: "Member transformation reaction (with permission)", cta: "" },
+      { platform: "TikTok", type: "Video", title: '"If Elevate were a person"', cta: "" },
+      { platform: "TikTok", type: "Video", title: '"Bring a friend day" teaser or recap', cta: "" },
+      { platform: "TikTok", type: "Video", title: '"Working out in Syracuse in [season]" — local humor', cta: "" },
+    ]
+  },
+  {
+    week: 4, theme: "Your move.",
+    desc: "Shift toward conversion while maintaining the value-first approach.",
+    goal: "Drive tour bookings, guest passes, and measurable leads.",
+    posts: [
+      { platform: "Instagram", type: "Reel", title: '"What your first tour at Elevate looks like"', cta: "Book yours free. Link in bio." },
+      { platform: "Instagram", type: "Carousel", title: '"The Elevate Difference" — experience vs. budget gym', cta: "Claim your free guest pass." },
+      { platform: "Instagram", type: "Reel", title: '"I almost didn\'t walk in. Here\'s what happened."', cta: "Start your story at Elevate." },
+      { platform: "Instagram", type: "Static", title: '"Spring is coming. So is your best self."', cta: "Try a class on us." },
+      { platform: "Instagram", type: "Reel", title: '"48 hours at Elevate" — morning swim, class, recovery', cta: "This is what 'more than a gym' looks like." },
+      { platform: "Facebook", type: "Video", title: "Video testimonial — member or trainer", cta: "Book a free tour at elevatesyracuse.com." },
+      { platform: "Facebook", type: "Seasonal", title: '"Spring into fitness" — seasonal push', cta: "Try a class on us this week." },
+      { platform: "Facebook", type: "Share Reel", title: "Top-performing Instagram Reel shared natively", cta: "" },
+      { platform: "Facebook", type: "Wrap-up", title: '"It\'s been an incredible month" — community milestones', cta: "" },
+      { platform: "TikTok", type: "Video", title: '"POV: You finally book the tour" — aspirational', cta: "" },
+      { platform: "TikTok", type: "Video", title: '"Ranking every amenity at Elevate" — tier list', cta: "" },
+      { platform: "TikTok", type: "Video", title: '"Things I wish I knew before joining a gym"', cta: "" },
+      { platform: "TikTok", type: "Video", title: "Best moments from the month — 15-second recap", cta: "" },
+      { platform: "TikTok", type: "Video", title: '"Reply to comments" — answering follower question', cta: "" },
+    ]
+  }
+];
+
+const STATUS_CYCLE = {
+  "Not started": "In progress",
+  "In progress": "Submitted",
+  "Submitted": "Done",
+  "Done": "Not started"
+};
+
+const STATUS_CLASS = {
+  "Not started": "not-started",
+  "In progress": "in-progress",
+  "Submitted": "submitted",
+  "Done": "done"
+};
+
+const PLATFORM_ICONS = {
+  "Instagram": "📸", "Instagram (Story)": "⭕",
+  "Instagram Reel": "🎬", "Facebook": "👥", "TikTok": "🎵"
+};
+
+const PLATFORM_COLORS = {
+  "Instagram": { text: "#E1306C", bg: "rgba(225,48,108,0.08)" },
+  "Instagram (Story)": { text: "#833AB4", bg: "rgba(131,58,180,0.08)" },
+  "Instagram Reel": { text: "#F56040", bg: "rgba(245,96,64,0.08)" },
+  "Facebook": { text: "#1877F2", bg: "rgba(24,119,242,0.08)" },
+  "TikTok": { text: "#111", bg: "rgba(0,0,0,0.06)" }
+};
+
+const DOT_COLORS = {
+  "Not started": "#6B7280",
+  "In progress": "#2563EB",
+  "Submitted": "#D97706",
+  "Done": "#059669"
+};
+
+// ─── STATE ───────────────────────────────────────────────────────────
+
+let state = {
+  tab: "calendar",
+  role: "admin",
+  filterPlatform: "All",
+  filterStatus: "All",
+  planWeek: 1,
+  expandedPosts: new Set(),
+  modalPost: null,
+  syncing: false,
+  lastSync: null,
+  posts: [
+    { id: "m-001", title: "5 Things You Didn't Know About Elevate — Carousel", platform: "Instagram", status: "Done", caption: "", notes: "Slides: recovery center, pool, classes, dual-club access, community events.", cta: "Tap the link in bio to book a free tour.", type: "Carousel" },
+    { id: "m-002", title: "Welcome to Elevate — Photo Album (both locations)", platform: "Facebook", status: "Done", caption: "", notes: "6–8 high-quality photos of both locations.", cta: "Book your free tour at elevatesyracuse.com.", type: "Photo Album" },
+    { id: "m-003", title: '"People think we\'re just a gym…" Reveal', platform: "TikTok", status: "In progress", caption: "", notes: "Transition reveal showing pool, recovery, classes, pickleball. Use trending audio.", type: "Video" },
+    { id: "m-004", title: "60-sec Cinematic Walkthrough — Liverpool", platform: "Instagram", status: "In progress", caption: "", notes: "Fast cuts, energetic music, text overlays highlighting amenities. Start with indoor track.", cta: "This isn't your average gym. See for yourself.", type: "Reel" },
+    { id: "m-005", title: "Community Question — What keeps you coming back?", platform: "Facebook", status: "Not started", caption: "", notes: "Engagement driver — no sell. Open-ended question.", type: "Question" },
+    { id: "m-006", title: '"Trainer Things During Class" — Humor Clip', platform: "TikTok", status: "Not started", caption: "", notes: "Humor-driven trainer personality content. No scripted feel.", type: "Video" },
+    { id: "m-007", title: '"More than a gym." Brand Static Graphic', platform: "Instagram", status: "Not started", caption: "", notes: "Clean brand graphic with tagline + Elevate colors.", cta: "What does fitness mean to you? Tell us below.", type: "Static" },
+    { id: "m-008", title: '"Things That Just Hit Different at Elevate"', platform: "TikTok", status: "In progress", caption: "Things that just hit different at Elevate 🔥\n\nPool. Recovery. Classes. Energy. If you know, you know.\n\n#ElevateSyracuse #MoreThanAGym #CNYFitness #SyracuseNY #FitFam #KeepShowingUp", notes: "Pool, sauna, classes montage with trending audio.", type: "Video" },
+    { id: "m-009", title: "Walkthrough Reel — Shared Natively to Facebook", platform: "Facebook", status: "Not started", caption: "", notes: "Share the Instagram walkthrough Reel natively to Facebook.", cta: "See what makes us different.", type: "Share Reel" },
+    { id: "m-010", title: "Trainer Intro — '3 Things About Me'", platform: "Instagram", status: "Not started", caption: "", notes: "30-second format. Pick your most charismatic trainer.", cta: "Want to train with [Name]? Try a session free.", type: "Reel" },
+    { id: "m-011", title: "Local Syracuse Community Tie-in Post", platform: "Facebook", status: "Not started", caption: "", notes: "Proud to be part of the Syracuse community since [year]. Here's what we're building.", type: "Story Post" },
+    { id: "m-012", title: '"Day in the Life at Elevate" — Member POV', platform: "TikTok", status: "Not started", caption: "", notes: "20–30 seconds, member perspective walkthrough.", type: "Video" },
+    { id: "m-013", title: "Recovery Center Education Carousel", platform: "Instagram", status: "Not started", caption: "", notes: "Educate on infrared sauna, compression therapy, red light therapy.", cta: "Explore our recovery center — link in bio.", type: "Carousel" },
+    { id: "m-014", title: "Recovery Routine After Leg Day", platform: "TikTok", status: "Not started", caption: "", notes: "Show the recovery center in action post-workout.", type: "Video" },
+    { id: "m-015", title: '"Syracuse\'s Best-Kept Fitness Secret" — Reveal', platform: "TikTok", status: "Not started", caption: "", notes: "Hook-driven reveal format showing Elevate's unique amenities.", type: "Video" },
+  ]
+};
+
+// ─── HELPERS ─────────────────────────────────────────────────────────
+
+function platformBadgeHTML(platform) {
+  const icon = PLATFORM_ICONS[platform] || "📱";
+  const cls = platform.replace(/[^a-zA-Z]/g, '-');
+  return `<span class="platform-badge ${platform.replace(/ /g,'-').replace(/[()]/g,'')}">${icon} ${platform}</span>`;
+}
+
+function statusBadgeHTML(status, clickable) {
+  const cls = STATUS_CLASS[status] || "not-started";
+  return `<button class="status-badge ${cls}${clickable ? '' : ' no-click'}" onclick="${clickable ? `cycleStatus(event)` : ''}">${status || 'Not started'}</button>`;
+}
+
+function canCycleStatus(role, status) {
+  if (role === "admin") return true;
+  if (role === "creator" && status !== "Submitted" && status !== "Done") return true;
+  if (role === "approver" && status === "Submitted") return true;
+  return false;
+}
+
+function canEdit(role) { return role === "admin" || role === "creator"; }
+function canApprove(role) { return role === "admin" || role === "approver"; }
+
+// ─── RENDER ──────────────────────────────────────────────────────────
+
+function render() {
+  // Header role
+  document.getElementById('role-select').value = state.role;
+
+  // Sync info
+  const syncInfo = document.getElementById('sync-info');
+  syncInfo.textContent = state.lastSync
+    ? `Synced ${state.lastSync.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`
+    : 'Not yet synced to Notion';
+
+  // Tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === state.tab);
+  });
+
+  // Content
+  const content = document.getElementById('content');
+  content.innerHTML = state.tab === 'calendar' ? renderCalendar() : renderPlan();
+}
+
+function renderCalendar() {
+  const posts = state.posts;
+  const platforms = ["All","Instagram","Facebook","TikTok"];
+  const statuses = ["All","Not started","In progress","Submitted","Done"];
+
+  const filtered = posts.filter(p => {
+    const mp = state.filterPlatform === "All" || p.platform === state.filterPlatform;
+    const ms = state.filterStatus === "All" || p.status === state.filterStatus;
+    return mp && ms;
+  });
+
+  const done = posts.filter(p => p.status === "Done").length;
+  const pct = posts.length ? Math.round((done / posts.length) * 100) : 0;
+
+  const statusCounts = {};
+  statuses.slice(1).forEach(s => {
+    statusCounts[s] = posts.filter(p => p.status === s).length;
+  });
+
+  let html = `
+    <div class="progress-card">
+      <div class="progress-header">
+        <span class="progress-label">WEEK 1 PROGRESS</span>
+        <span class="progress-count">${done}/${posts.length} done · ${pct}%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="progress-dots">
+        ${statuses.slice(1).map(s => `
+          <div class="progress-dot">
+            <div class="dot" style="background:${DOT_COLORS[s]}"></div>
+            ${s}: <strong>${statusCounts[s] || 0}</strong>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="filter-row">
+      ${platforms.map(p => `<button class="chip ${state.filterPlatform === p ? 'active-platform' : ''}" onclick="setFilterPlatform('${p}')">${p}</button>`).join('')}
+    </div>
+    <div class="filter-row" style="margin-bottom:14px">
+      ${statuses.map(s => `<button class="chip ${state.filterStatus === s ? 'active-status' : ''}" onclick="setFilterStatus('${s}')">${s}</button>`).join('')}
+    </div>
+  `;
+
+  if (filtered.length === 0) {
+    html += `<div class="empty-state">No posts match your filters.</div>`;
+  } else {
+    filtered.forEach(post => { html += renderPostCard(post); });
+  }
+
+  return html;
+}
+
+function renderPostCard(post) {
+  const expanded = state.expandedPosts.has(post.id);
+  const pcfg = PLATFORM_COLORS[post.platform] || { text: "#6B7280", bg: "#F3F4F6" };
+  const canC = canCycleStatus(state.role, post.status);
+
+  let bodyHtml = '';
+  if (expanded) {
+    bodyHtml = `<div class="post-body">`;
+    if (post.caption) {
+      bodyHtml += `<div class="body-label">CAPTION</div><div class="caption-preview">${escHtml(post.caption)}</div>`;
+    } else if (post.notes) {
+      bodyHtml += `<div class="body-label">NOTES</div><div class="notes-text">${escHtml(post.notes)}</div>`;
+    }
+    if (post.cta) {
+      bodyHtml += `<div class="cta-pill">🎯 ${escHtml(post.cta)}</div>`;
+    }
+    bodyHtml += `<button class="write-btn ${post.caption ? 'has-caption' : 'no-caption'}" onclick="openModal('${post.id}')">
+      ${post.caption ? '✏️ Edit Caption' : '✨ Write Caption'}
+    </button>`;
+    bodyHtml += `</div>`;
+  }
+
+  return `
+    <div class="post-card ${expanded ? 'expanded' : ''}" id="card-${post.id}">
+      <div class="post-card-top" onclick="toggleExpand('${post.id}')">
+        <div class="post-meta">
+          <div class="post-badges">
+            ${platformBadgeHTML(post.platform)}
+            <span class="type-badge">${post.type}</span>
+          </div>
+          <div class="post-title ${expanded ? 'wrap' : ''}">${escHtml(post.title)}</div>
+        </div>
+        <div class="post-actions">
+          ${statusBadgeHTML(post.status, canC)}
+          <span class="chevron ${expanded ? 'up' : ''}">▼</span>
+        </div>
+      </div>
+      ${bodyHtml}
+    </div>`;
+}
+
+function renderPlan() {
+  const week = WEEK_PLAN[state.planWeek - 1];
+  const byPlatform = {};
+  week.posts.forEach(p => {
+    if (!byPlatform[p.platform]) byPlatform[p.platform] = [];
+    byPlatform[p.platform].push(p);
+  });
+
+  let html = `
+    <div class="week-tabs">
+      ${WEEK_PLAN.map(w => `
+        <button class="week-tab ${state.planWeek === w.week ? 'active' : ''}" onclick="setPlanWeek(${w.week})">
+          Week ${w.week}${w.week === 1 ? ' 🟢' : ''}
+        </button>`).join('')}
+    </div>
+    <div class="week-hero">
+      <div class="week-eyebrow">WEEK ${week.week} THEME</div>
+      <div class="week-theme">"${week.theme}"</div>
+      <div class="week-desc">${week.desc}</div>
+      <div class="week-goal">🎯 ${week.goal}</div>
+    </div>`;
+
+  Object.entries(byPlatform).forEach(([platform, posts]) => {
+    const pcfg = PLATFORM_COLORS[platform] || { text: "#6B7280", bg: "#F3F4F6" };
+    const icon = PLATFORM_ICONS[platform] || "📱";
+    html += `
+      <div class="platform-section">
+        <div class="platform-section-header">
+          <span>${icon}</span>
+          <span class="platform-section-name" style="color:${pcfg.text}">${platform}</span>
+          <span class="platform-count" style="background:${pcfg.bg};color:${pcfg.text}">${posts.length}</span>
+        </div>
+        ${posts.map(p => `
+          <div class="plan-post-card" style="border-color:${pcfg.text}22">
+            <div class="plan-post-inner">
+              <span class="plan-type-badge" style="background:${pcfg.bg};color:${pcfg.text}">${p.type}</span>
+              <div>
+                <div class="plan-post-title">${escHtml(p.title)}</div>
+                ${p.cta ? `<div class="plan-post-cta" style="color:${pcfg.text}">→ ${escHtml(p.cta)}</div>` : ''}
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>`;
+  });
+
+  return html;
+}
+
+// ─── MODAL ───────────────────────────────────────────────────────────
+
+function openModal(postId) {
+  const post = state.posts.find(p => p.id === postId);
+  if (!post) return;
+  state.modalPost = { ...post };
+  renderModal();
+}
+
+function renderModal() {
+  const post = state.modalPost;
+  if (!post) return;
+  const mc = document.getElementById('modal-container');
+  const ce = canEdit(state.role);
+  const ca = canApprove(state.role);
+
+  mc.innerHTML = `
+    <div class="modal-overlay" onclick="handleOverlayClick(event)">
+      <div class="modal-sheet">
+        <div class="modal-handle-row"><div class="modal-handle"></div></div>
+        <div class="modal-header">
+          <div>
+            <div class="modal-title">Caption Editor</div>
+            <div style="margin-top:5px">${platformBadgeHTML(post.platform)}</div>
+          </div>
+          <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="concept-pill">📌 ${escHtml(post.title)}</div>
+
+          <div>
+            <label class="field-label">PRODUCTION NOTES</label>
+            <textarea class="field-textarea" id="modal-notes" rows="3" ${!ce ? 'disabled' : ''}
+              placeholder="Filming notes, content direction, member permissions…">${escHtml(post.notes || '')}</textarea>
+          </div>
+
+          ${ce ? `
+            <button class="generate-btn ready" id="gen-btn" onclick="generateCaption()">
+              ✨ Generate Elevate Caption
+            </button>` : ''}
+
+          <div id="error-box" style="display:none" class="error-box"></div>
+
+          <div>
+            <label class="field-label">CAPTION COPY</label>
+            <textarea class="field-textarea mono" id="modal-caption" rows="10" ${!ce ? 'disabled' : ''}
+              placeholder="Caption will appear after AI generation, or type manually…">${escHtml(post.caption || '')}</textarea>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px">
+            ${ce ? `
+              <div class="action-row">
+                <button class="action-btn draft" onclick="saveModal('In progress')">💾 Save Draft</button>
+                <button class="action-btn submit" onclick="saveModal('Submitted')">📤 Submit for Review</button>
+              </div>` : ''}
+            ${ca ? `<button class="action-btn approve" onclick="saveModal('Done')">✅ Approve Post</button>` : ''}
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function handleOverlayClick(e) {
+  if (e.target === e.currentTarget) closeModal();
+}
+
+function closeModal() {
+  document.getElementById('modal-container').innerHTML = '';
+  state.modalPost = null;
+}
+
+async function generateCaption() {
+  const btn = document.getElementById('gen-btn');
+  const errBox = document.getElementById('error-box');
+  const notesEl = document.getElementById('modal-notes');
+  const captionEl = document.getElementById('modal-caption');
+  const post = state.modalPost;
+
+  btn.className = 'generate-btn loading';
+  btn.innerHTML = '<div class="spinner"></div> Generating with AI…';
+  btn.disabled = true;
+  errBox.style.display = 'none';
+
+  const system = `You are the Elevate Fitness Social Media Assistant for elevatesyracuse.com, a premium two-location gym in Syracuse, NY (DeWitt + Liverpool locations).
+
+Brand voice: inviting, motivational, energetic, human, community-first.
+Motto: "More than a gym." Tagline: "Real people. Real fitness. Real community."
+Brand filter — every post must be: Real (authentic), Inclusive (welcoming to all), Elevating (inspiring action).
+
+CRITICAL RULES:
+- NEVER say "join now" — use ONLY soft CTAs: "book a free tour", "claim a guest pass", "try a class on us", "explore our recovery center", "see what makes us different"
+- Never mention prices or schedules — refer to elevatesyracuse.com
+- No unsafe fitness claims
+- Inclusive "you/we/our" language
+- Short, punchy sentences
+
+Output EXACTLY this format (no preamble, no extra text):
+HOOK: [1 punchy attention-grabbing line]
+CAPTION:
+[line 1]
+[line 2]
+[line 3]
+[optional line 4]
+CTA: [1 clear soft action]
+HASHTAGS: [10-12 from: #ElevateSyracuse #ElevateFitness #MoreThanAGym #CNYFitness #SyracuseNY #CentralNY #FitFam #StrongerTogether #DeWittNY #LiverpoolNY #CNY #SyracuseLife #CNYWellness #GroupFitness #SpinClass #StrengthTraining #PersonalTraining #Aquatics #SwimLessons #Pickleball #Tennis #Sauna #IndoorTrack #DEKA #KeepShowingUp #YouGotThis #ProgressNotPerfection #MoveFeelLive]
+ALT TEXT: [1-sentence image description for accessibility]
+PRODUCTION NOTE: [1-sentence filming or design tip]`;
+
+  const prompt = `Write a ${post.platform} post for Elevate Fitness.
+Post concept: ${post.title}
+Format: ${post.type}
+Platform: ${post.platform}
+CTA direction: ${post.cta || "Drive tour bookings or brand awareness"}
+Production notes: ${notesEl.value || "None"}`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text || "";
+    if (!text) throw new Error("Empty response");
+    captionEl.value = text;
+  } catch (e) {
+    errBox.style.display = 'block';
+    errBox.textContent = '⚠️ Generation failed. Check your connection and try again.';
+  }
+
+  btn.className = 'generate-btn ready';
+  btn.innerHTML = '🔄 Regenerate Caption';
+  btn.disabled = false;
+}
+
+function saveModal(newStatus) {
+  const captionEl = document.getElementById('modal-caption');
+  const notesEl = document.getElementById('modal-notes');
+  const postId = state.modalPost.id;
+
+  state.posts = state.posts.map(p => {
+    if (p.id !== postId) return p;
+    return {
+      ...p,
+      caption: captionEl ? captionEl.value : p.caption,
+      notes: notesEl ? notesEl.value : p.notes,
+      status: newStatus
+    };
+  });
+
+  closeModal();
+  render();
+}
+
+// ─── ACTIONS ─────────────────────────────────────────────────────────
+
+function toggleExpand(postId) {
+  if (state.expandedPosts.has(postId)) {
+    state.expandedPosts.delete(postId);
+  } else {
+    state.expandedPosts.add(postId);
+  }
+  render();
+}
+
+function cycleStatus(e) {
+  e.stopPropagation();
+  const card = e.target.closest('.post-card');
+  const id = card.id.replace('card-', '');
+  const post = state.posts.find(p => p.id === id);
+  if (!post || !canCycleStatus(state.role, post.status)) return;
+  state.posts = state.posts.map(p =>
+    p.id === id ? { ...p, status: STATUS_CYCLE[p.status] || "In progress" } : p
+  );
+  render();
+}
+
+function setFilterPlatform(p) {
+  state.filterPlatform = p;
+  render();
+}
+
+function setFilterStatus(s) {
+  state.filterStatus = s;
+  render();
+}
+
+function setPlanWeek(w) {
+  state.planWeek = w;
+  render();
+}
+
+async function syncToNotion() {
+  const btn = document.getElementById('sync-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner-dark"></div> Syncing…';
+  await new Promise(r => setTimeout(r, 1600));
+  state.lastSync = new Date();
+  state.syncing = false;
+  btn.disabled = false;
+  btn.textContent = '✓ Synced';
+  document.getElementById('sync-info').textContent =
+    `Synced ${state.lastSync.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
+  setTimeout(() => { btn.textContent = '↑ Sync to Notion'; }, 3000);
+}
+
+function escHtml(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── EVENTS ──────────────────────────────────────────────────────────
+
+document.getElementById('role-select').addEventListener('change', e => {
+  state.role = e.target.value;
+  render();
+});
+
+document.getElementById('sync-btn').addEventListener('click', syncToNotion);
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.tab = btn.dataset.tab;
+    render();
+  });
+});
+
+// ─── BOOT ────────────────────────────────────────────────────────────
+
+render();
+</script>
+</body>
+</html>
